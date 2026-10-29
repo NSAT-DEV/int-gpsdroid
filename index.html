@@ -51,6 +51,11 @@
   .btn svg{width:20px;height:20px}
   .meta{color:var(--muted);font-size:.9rem}
   .meta b{color:var(--ink);font-weight:600}
+  .build{margin-top:14px;display:inline-flex;align-items:center;gap:8px;color:var(--muted);
+    font-size:.86rem;border:1px solid var(--line);background:var(--card);
+    padding:7px 14px;border-radius:999px}
+  .build b{color:var(--ink);font-weight:600}
+  .build .dot{width:7px;height:7px;border-radius:99px;background:var(--green);flex:0 0 auto}
 
   /* Phone mockup */
   .phone{justify-self:center;width:250px;height:510px;border-radius:40px;background:#05080f;
@@ -164,6 +169,7 @@
         </a>
         <div class="meta"><b>Free</b> · Android <b>7.0+</b> · no account</div>
       </div>
+      <div class="build" id="build"><span class="dot"></span><span><b>Latest build:</b> <span id="build-msg">Android Internal GPS Info v1.5 (10-29-2026)</span></span></div>
     </div>
 
     <div class="phone" aria-hidden="true">
@@ -305,5 +311,22 @@
   </div>
 </footer>
 
+<script>
+  // Show the APK file's GitHub description (its latest commit message), fetched live so
+  // it always matches the repo. The text in #build-msg is the fallback if this fails.
+  (function () {
+    var el = document.getElementById('build-msg');
+    if (!el || !window.fetch) return;
+    var url = 'https://api.github.com/repos/NSAT-DEV/int-gpsdroid/commits?path=GPS-Info.apk&page=1&per_page=1';
+    fetch(url, { headers: { 'Accept': 'application/vnd.github+json' } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (data && data[0] && data[0].commit && data[0].commit.message) {
+          el.textContent = data[0].commit.message.split('\n')[0];
+        }
+      })
+      .catch(function () { /* keep the fallback text */ });
+  })();
+</script>
 </body>
 </html>
