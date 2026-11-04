@@ -307,7 +307,7 @@
 <footer>
   <div class="wrap foot">
     <div>Internal GPS Info · uses only your phone's own sensors.</div>
-    <div><span class="pill">Version 1.5</span> <span class="pill">Android 7.0+</span></div>
+    <div><span class="pill">Version <span class="apk-ver">1.5</span></span> <span class="pill">Android 7.0+</span></div>
   </div>
 </footer>
 
@@ -318,10 +318,29 @@
   (function () {
     var el = document.getElementById('build-msg');
     if (!el || !window.fetch) return;
+    // Also fills in the version shown in the footer.
+    function fillFromRelease(rel){
+      // Fills every .apk-ver / .apk-size on the page from the latest release.
+      function releaseVersion(rel){
+        // The version is the number at the end of the release tag (e.g. "App-v2.4" -> "2.4"),
+        // or failing that, the first version number in the release title.
+        var t = (rel.tag_name || "").match(/\d+(?:\.\d+)+/g);
+        if (t) return t[t.length - 1];
+        var n = (rel.name || "").replace(/\s+/g, "").match(/\d+(?:\.\d+)+/);
+        return n ? n[0] : "";
+      }
+      var v = releaseVersion(rel);
+      if (v) document.querySelectorAll(".apk-ver").forEach(function(e){ e.textContent = v; });
+      var a = (rel.assets || []).filter(function(x){ return x.name === "GPS-Info.apk"; })[0];
+      if (a && a.size) document.querySelectorAll(".apk-size").forEach(function(e){
+        e.textContent = Math.round(a.size / 1000000) + "\u00a0MB";
+      });
+    }
     var url = 'https://api.github.com/repos/NSAT-DEV/int-gpsdroid/releases/latest';
     fetch(url, { headers: { 'Accept': 'application/vnd.github+json' } })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (data) {
+        if (data) fillFromRelease(data);
         var msg = ((data && data.body) || '').trim() || ((data && data.name) || '').trim();
         if (msg) {
           el.textContent = msg.split('\n')[0];
