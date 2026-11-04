@@ -151,7 +151,7 @@
       </svg>
       Internal GPS Info
     </div>
-    <a class="nav-dl" href="GPS-Info.apk" download>Download APK</a>
+    <a class="nav-dl" href="https://github.com/nsat-dev/int-gpsdroid/releases/latest/download/GPS-Info.apk" download>Download APK</a>
   </div>
 </header>
 
@@ -163,7 +163,7 @@
       <p class="lead">Speed, acceleration, braking, lap times, session recording and more —
         measured with your Android phone's own GPS and sensors. No boxes, no dongles, no account.</p>
       <div class="cta">
-        <a class="btn" href="GPS-Info.apk" download>
+        <a class="btn" href="https://github.com/nsat-dev/int-gpsdroid/releases/latest/download/GPS-Info.apk" download>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></svg>
           Download for Android
         </a>
@@ -297,7 +297,7 @@
   <div class="wrap">
     <h2>Ready to run?</h2>
     <p>Grab the latest build and take it to the track. Free, no account, works offline once installed.</p>
-    <a class="btn" href="GPS-Info.apk" download>
+    <a class="btn" href="https://github.com/nsat-dev/int-gpsdroid/releases/latest/download/GPS-Info.apk" download>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></svg>
       Download GPS-Info.apk
     </a>
@@ -312,17 +312,19 @@
 </footer>
 
 <script>
-  // Show the APK file's GitHub description (its latest commit message), fetched live so
-  // it always matches the repo. The text in #build-msg is the fallback if this fails.
+  // Show the latest GitHub release's title (or the first line of its notes), fetched live
+  // so it always matches what the download buttons serve. The text in #build-msg is the
+  // fallback if this fails.
   (function () {
     var el = document.getElementById('build-msg');
     if (!el || !window.fetch) return;
-    var url = 'https://api.github.com/repos/NSAT-DEV/int-gpsdroid/commits?path=GPS-Info.apk&page=1&per_page=1';
+    var url = 'https://api.github.com/repos/NSAT-DEV/int-gpsdroid/releases/latest';
     fetch(url, { headers: { 'Accept': 'application/vnd.github+json' } })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (data) {
-        if (data && data[0] && data[0].commit && data[0].commit.message) {
-          el.textContent = data[0].commit.message.split('\n')[0];
+        var msg = ((data && data.body) || '').trim() || ((data && data.name) || '').trim();
+        if (msg) {
+          el.textContent = msg.split('\n')[0];
         }
       })
       .catch(function () { /* keep the fallback text */ });
