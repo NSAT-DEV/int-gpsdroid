@@ -54,6 +54,7 @@
   .build{margin-top:14px;display:inline-flex;align-items:center;gap:8px;color:var(--muted);
     font-size:.86rem;border:1px solid var(--line);background:var(--card);
     padding:7px 14px;border-radius:999px}
+  .build[hidden]{display:none}
   .build b{color:var(--ink);font-weight:600}
   .build .dot{width:7px;height:7px;border-radius:99px;background:var(--green);flex:0 0 auto}
 
@@ -169,7 +170,7 @@
         </a>
         <div class="meta"><b>Free</b> · Android <b>7.0+</b> · no account</div>
       </div>
-      <div class="build" id="build"><span class="dot"></span><span><b>Latest build:</b> <span id="build-msg">Android Internal GPS Info v1.5 (10-29-2026)</span></span></div>
+      <div class="build" id="build" hidden><span class="dot"></span><span><b>Latest build:</b> <span id="build-msg"></span></span></div>
     </div>
 
     <div class="phone" aria-hidden="true">
@@ -313,8 +314,8 @@
 
 <script>
   // Show the latest GitHub release's title (or the first line of its notes), fetched live
-  // so it always matches what the download buttons serve. The text in #build-msg is the
-  // fallback if this fails.
+  // so it always matches what the download buttons serve. The "Latest build" line stays
+  // hidden unless GitHub answers.
   (function () {
     var el = document.getElementById('build-msg');
     if (!el || !window.fetch) return;
@@ -344,9 +345,10 @@
         var msg = ((data && data.body) || '').trim() || ((data && data.name) || '').trim();
         if (msg) {
           el.textContent = msg.split('\n')[0];
+          document.getElementById('build').hidden = false;
         }
       })
-      .catch(function () { /* keep the fallback text */ });
+      .catch(function () { /* leave the line hidden */ });
   })();
 </script>
 </body>
